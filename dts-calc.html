@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,200..700,0..1,-50..200"/>
     <style>
         :root {
             /* Canvas */
@@ -30,7 +31,7 @@
 
             /* Fixed sizes (objects never shrink) */
             --font-family: "Handjet", system-ui, sans-serif;
-            --font-weight-default: 300;
+            --font-weight-default: 400;
             --font-size-display: 84px;
             --font-size-title: 36px;
             --font-size-label: 20px;
@@ -39,8 +40,10 @@
             --circle-d: 104px;
             --label-value-gap: 12px;
             --time-top-offset: 24px;
-            --toggles-to-circles: 24px;
-            --circles-bottom: 16px;
+            --toggles-to-circles: 12px;     /* footer rows closer */
+            --circles-bottom: 8px;          /* less air at very bottom */
+            --reset-gap: 12px;              /* gap above reset row */
+            --reset-h: 32px;                /* visual height of reset row */
             --line-height-display: normal;
             --line-height-label: normal;
             --line-height-button: normal;
@@ -49,7 +52,7 @@
             --letter-spacing-button: 0;
             --label-left: 24px;
             --value-right: 24px;
-            --toggle-mx: 24px;
+            --toggle-mx: 0px;
             --toggle-gap: 0px;
             --toggle-bw: 1px;
             --toggle-br: 0px;
@@ -57,10 +60,11 @@
             --toggle-py: 8px;
             --circle-stroke: 1px;
 
-            /* Footer height = toggles + gap + circles + bottom safe area */
+            /* Footer height = toggles + gap + circles + gap + reset + bottom safe area */
             --footer-h: calc(
                 var(--toggle-h) + var(--toggles-to-circles) + var(--circle-d) +
-                var(--circles-bottom) + env(safe-area-inset-bottom, 0)
+                var(--reset-gap) + var(--reset-h) + var(--circles-bottom) +
+                env(safe-area-inset-bottom, 0)
             );
 
             /* One field block's fixed height (label + gap + big number) */
@@ -68,15 +72,15 @@
 
             /* Total fixed stack (no inter-block gaps) */
             --stack-fixed: calc(
-                var(--time-top-offset) + (3 * var(--block-h)) + var(--footer-h) +
+                var(--time-top-offset) + (4 * var(--block-h)) + var(--footer-h) +
                 var(--safe-padding-top) + var(--safe-padding-bottom)
             );
 
-            /* Remaining height available for the three gaps */
+            /* Remaining height available for the four gaps */
             --available: calc(min(100dvh, var(--frame-height)) - var(--stack-fixed));
 
-            /* Dynamic gap: share the leftover evenly; never negative; cap at 64px */
-            --gap-dynamic: clamp(0px, calc(var(--available) / 3), 16px);
+            /* Dynamic gap: share leftover evenly across 4 gaps, cap tighter at 8px */
+            --gap-dynamic: clamp(0px, calc(var(--available) / 4), 8px);
         }
 
         * {
@@ -113,7 +117,6 @@
             text-transform: uppercase;
             letter-spacing: var(--letter-spacing-label);
             line-height: var(--line-height-label);
-            padding-left: 24px;
         }
 
         .ctds-main { 
@@ -132,9 +135,13 @@
             flex-shrink: 0; 
         }
 
-        .ctds-field {
-            display: flex;
-            flex-direction: column;
+        .ctds-field{
+            display:flex;
+            justify-content:flex-end;   /* values hug right rail */
+            align-items:baseline;       /* 20px label + 84px value share baseline */
+            gap:12px;                   /* spec gap */
+            min-width:0;                /* iOS Safari flex-shrink fix */
+            padding: 0;
         }
 
         .ctds-field--time {
@@ -146,83 +153,44 @@
             margin-bottom: var(--gap-dynamic);
         }
 
-        /* Distance row: push label next to the value on the right */
-        .ctds-field--distance {
-            display: grid;                         /* keep grid */
-            grid-template-columns: 1fr auto auto;  /* spacer | label | value */
-            column-gap: var(--label-value-gap);    /* small gap between label & value */
-        }
-        .ctds-field--distance .ctds-label {
-            grid-column: 2;        /* place label in middle column */
-            margin-left: 0;        /* remove left rail offset */
-            justify-self: end;     /* tuck against the value */
-        }
-        .ctds-field--distance .ctds-value {
-            grid-column: 3;        /* value at far right */
-            justify-self: end;     
-        }
-
-        /* Time row: label next to value on the right */
-        .ctds-field--time {
-            display: grid;
-            grid-template-columns: 1fr auto auto; /* spacer | label | value */
-            column-gap: var(--label-value-gap);
-        }
-        .ctds-field--time .ctds-label {
-            grid-column: 2;
-            margin-left: 0;
-            justify-self: end;
-        }
-        .ctds-field--time .ctds-value {
-            grid-column: 3;
-            justify-self: end;
-        }
-
-        /* Speed row: label next to value on the right */
-        .ctds-field--speed {
-            display: grid;
-            grid-template-columns: 1fr auto auto; /* spacer | label | value */
-            column-gap: var(--label-value-gap);
-        }
-        .ctds-field--speed .ctds-label {
-            grid-column: 2;
-            margin-left: 0;
-            justify-self: end;
-        }
-        .ctds-field--speed .ctds-value {
-            grid-column: 3;
-            justify-self: end;
-        }
 
         .ctds-field--speed {
             margin-bottom: var(--gap-dynamic);
         }
 
-        .ctds-label {
+        .ctds-label{
             font-size: var(--font-size-label);
             font-weight: var(--font-weight-default);
             text-transform: uppercase;
             letter-spacing: var(--letter-spacing-label);
-            line-height: var(--line-height-label);
+            line-height: 1;
+            position: relative; top: 1px;   /* Handjet baseline nudge */
+            white-space: nowrap;
             margin-left: var(--label-left);
-            margin-bottom: var(--label-value-gap);
+            margin-bottom: 0;
         }
 
-        .ctds-value {
+        .ctds-value{
             font-family: var(--font-family);
             font-size: var(--font-size-display);
             font-weight: var(--font-weight-default);
             letter-spacing: var(--letter-spacing-display);
-            line-height: var(--line-height-display);
+            line-height: 1;
             text-align: right;
             direction: ltr;
-            margin-right: var(--value-right);
+            margin-right: 0px;
             background: transparent;
             border: none;
             color: var(--color-text);
             outline: none;
-            width: 200%;
-            padding: 0px;
+            /* Flex row sizing: hug content, never spill the rail */
+            flex: 0 1 auto;
+            min-width: 0;           /* iOS Safari shrink fix */
+            max-width: 100%;
+            width: auto;            /* kill previous width hacks */
+            font-variant-numeric: tabular-nums;
+            padding-inline-end: 0.1ch;  /* caret safety */
+            overflow: hidden;           /* guard sub‑px spill */
         }
 
         .ctds-value::placeholder {
@@ -339,52 +307,15 @@
             :root { --available: calc(min(100vh, var(--frame-height)) - var(--stack-fixed)); }
         }
 
-        /* --- Inline row layout for every field: [label | value] --- */
-        .ctds-field {
-            display: grid;
-            grid-template-columns: auto 1fr;     /* label sizes to content; value gets remaining space */
-            align-items: baseline;                /* true text baseline alignment */
-            column-gap: var(--label-value-gap);
-        }
-
-        /* Label: left rail, crisp baseline, no vertical stack margin */
-        .ctds-field > .ctds-label {
-            white-space: nowrap;
-            line-height: 1;
-            margin-left: var(--label-left);
-            margin-bottom: 0;
-        }
-
-        /* Value: right rail, fixed "digit box" width, no font shrinking */
-        .ctds-field > .ctds-value {
-            justify-self: end;
-            text-align: right;
-            line-height: var(--line-height-display);
-            width: var(--value-ch, 10ch);        /* number box sized in character units */
-            max-width: 100%;
-            margin-right: var(--value-right);
-            font-variant-numeric: tabular-nums;  /* consistent digit widths */
-            padding-inline-end: 0;           /* zero out logical end padding */
-            transition: width 140ms ease;        /* smooth resize on mode flip */
-        }
-
-        /* Number-box widths per field (fonts stay 96/20; we only size the box) */
-        .ctds-field--time     .ctds-value { --value-ch: 8ch; }  /* "HH:MM:SS" = 8 chars */
-        .ctds-field--distance .ctds-value { --value-ch: 6ch; }  /* "99.99" */
-
-        /* Mode-aware width for speed/pace */
-        .ctds-app[data-speed-mode="PACE"]  .ctds-field--speed .ctds-value { --value-ch: 6ch; } /* "MM:SS" */
-        .ctds-app[data-speed-mode="SPEED"] .ctds-field--speed .ctds-value { --value-ch: 6ch; } /* "99.99" */
-
-        /* Remove ALL focus rings from pills + circles (product choice) */
+        /* Remove default focus rings on pills/circles, but keep them for keyboards via :focus-visible */
         .ctds-toggle:focus,
         .ctds-circle:focus { 
-            outline: none !important; 
+            outline: none; 
         }
-
-        /* Safety: if any older rule still stacks fields, this override wins */
-        .ctds-field.ctds-field { 
-            display: grid; 
+        .ctds-toggle:focus-visible,
+        .ctds-circle:focus-visible {
+            outline: 1px solid rgba(255,255,255,.75);
+            outline-offset: 2px;
         }
 
         /* widen the frame on desktop, keep mobile spec */
@@ -404,29 +335,142 @@
             margin-bottom: var(--gap-dynamic);
         }
 
-        /* Toggle row borders: middle only top/bottom (Figma) */
-        .ctds-toggle-row .ctds-toggle {
-            border: 1px solid #FFF;
-        }
-        .ctds-toggle-row .ctds-toggle + .ctds-toggle {
-            border-left: none; /* collapse internal seams */
-        }
-        .ctds-toggle-row .ctds-toggle:nth-child(2) {
-            border-left: none;
-            border-right: 1px solid #FFF;  /* middle: only top/bottom borders */
+        .ctds-field--pace {
+            margin-bottom: var(--gap-dynamic);
         }
 
-        /* Optional: If Time value still feels wide, nudge box width a hair */
-        .ctds-field--time .ctds-value { 
-            --value-ch: 7.75ch; 
-            padding-inline-end: 0; 
+        /* Toggle row borders: 2-button layout */
+        .ctds-toggle-row .ctds-toggle{ border:1px solid #FFF; }
+        .ctds-toggle-row .ctds-toggle + .ctds-toggle{
+            border-left:none; box-shadow: inset 1px 0 0 0 #FFF;
         }
 
-        /* Force fixed pixel width for Distance and Speed values */
-        .ctds-field--distance .ctds-value,
-        .ctds-field--speed .ctds-value {
-            width: 180px;              /* explicit fixed width */
+        /* --- Safety neutralizers --- */
+        .ctds-field{ grid-template-columns: unset !important; }
+        .ctds-field .ctds-value{ width: auto !important; }
+
+        /* --- Footer layout: stack on mobile, spread on wide --- */
+
+        /* 1) make the footer itself a flex container with a vertical stack by default */
+        .ctds-controls{
+            display:flex;
+            flex-direction:column;
+            gap: var(--toggles-to-circles);     /* keep your 24px token */
+            padding-inline: var(--toggle-mx);   /* same 24px side insets */
         }
+
+        /* 2) make each inner block flex nicely */
+        .ctds-toggle-row,
+        .ctds-circles{
+            flex: 1 1 auto;     /* allows them to grow/shrink */
+            margin-inline: 0;   /* kill previous inline margins so flex can rule */
+            width: auto;
+        }
+
+        /* keep existing behavior inside each row */
+        .ctds-toggle-row{ display:flex; }
+        .ctds-circles{ display:flex; justify-content: space-between; align-items:center; }
+
+
+        /* Footer stays stacked: toggles row on top, circles on bottom, full width */
+        .ctds-controls{ flex-direction: column; }
+        .ctds-toggle-row, .ctds-circles{ width: 100%; }
+        .ctds-toggle-row .ctds-toggle{ flex: 1 1 0; }
+
+        /* Pin footer to bottom on mobile and desktop */
+        .ctds-app { position: relative; }
+        .ctds-controls {
+            position: absolute;
+            left: var(--safe-padding-left);
+            right: var(--safe-padding-right);
+            bottom: env(safe-area-inset-bottom, 0);
+        }
+
+        /* Distance value box: compact, stable width ~ just enough for 99.99 */
+        .ctds-field--distance > .ctds-value{
+            inline-size: 5ch !important;     /* approx width for 99.99 */
+            max-inline-size: 100%;
+        }
+
+        /* Speed value box: compact, stable width for MM:SS or 00.00 */
+        .ctds-field--speed > .ctds-value{
+            inline-size: 5ch !important;
+            max-inline-size: 100%;
+        }
+
+        /* Time value box: compact, stable width for HH:MM:SS */
+        .ctds-field--time > .ctds-value{
+            inline-size: 7.5ch !important;   /* fits 00:00:00 comfortably */
+            max-inline-size: 100%;
+        }
+
+        /* Pace value box: compact, stable width for MM:SS */
+        .ctds-field--pace > .ctds-value{
+            inline-size: 5ch !important;     /* fits 00:00 comfortably */
+            max-inline-size: 100%;
+        }
+
+        /* Reset button styling */
+        .ctds-reset {
+            margin-top: var(--reset-gap);
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .ctds-reset-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: transparent;
+            border: none;
+            color: var(--color-text);
+            font-family: var(--font-family);
+            font-size: var(--font-size-button);
+            font-weight: var(--font-weight-default);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-button);
+            line-height: var(--line-height-button);
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            padding: 8px 0;
+            min-height: var(--reset-h);
+        }
+
+        .ctds-reset-btn:hover {
+            opacity: 0.7;
+        }
+
+        .ctds-reset-btn:focus { outline: none; }
+        .ctds-reset-btn:focus-visible {
+            outline: 1px solid rgba(255,255,255,.75);
+            outline-offset: 2px;
+        }
+
+        .ctds-reset .material-symbols-outlined {
+            font-size: 20px;
+            line-height: 1;
+        }
+
+        /* Toggle button active states */
+        .ctds-toggle.is-active {
+            background-color: var(--color-active-circle-fill);
+            color: var(--color-active-circle-label);
+        }
+
+        /* Label colors */
+        .ctds-field--distance .ctds-label,
+        .ctds-field--speed .ctds-label,
+        .ctds-field--pace .ctds-label{ color:#FFC7C7; }
+
+        /* High-contrast user preference: ensure sufficient contrast for pink labels */
+        @media (prefers-contrast: more){
+            .ctds-field--distance .ctds-label,
+            .ctds-field--speed .ctds-label,
+            .ctds-field--pace .ctds-label { color:#FFF; }
+        }
+    @media (max-width: 480px) {
+      :root { --circle-d: 88px; }
+    }
     </style>
 </head>
 <body>
@@ -435,11 +479,12 @@
         
         <main class="ctds-main">
             <div class="ctds-field ctds-field--time is-target">
-                <label class="ctds-label" for="timeInput">HH:MM:SS</label>
+                <label class="ctds-label" for="timeInput" id="timeLabel">HH:MM:SS</label>
                 <input type="text" 
                        class="ctds-value" 
                        id="timeInput" 
                        placeholder="00:00:00"
+                       aria-describedby="timeLabel"
                        aria-disabled="true">
             </div>
 
@@ -449,15 +494,27 @@
                        class="ctds-value" 
                        id="distanceInput" 
                        placeholder="00.00"
+                       aria-describedby="distanceLabel"
                        inputmode="decimal">
             </div>
 
             <div class="ctds-field ctds-field--speed is-nontarget">
-                <label class="ctds-label" for="speedInput" id="speedLabel">MIN/KM</label>
+                <label class="ctds-label" for="speedInput" id="speedLabel">KM/H</label>
                 <input type="text" 
                        class="ctds-value" 
                        id="speedInput" 
+                       placeholder="00.00"
+                       aria-describedby="speedLabel"
+                       inputmode="decimal">
+            </div>
+
+            <div class="ctds-field ctds-field--pace is-nontarget">
+                <label class="ctds-label" for="paceInput" id="paceLabel">MIN/KM</label>
+                <input type="text" 
+                       class="ctds-value" 
+                       id="paceInput" 
                        placeholder="00:00"
+                       aria-describedby="paceLabel"
                        inputmode="numeric">
             </div>
         </main>
@@ -465,14 +522,20 @@
         <footer class="ctds-controls">
             <div class="ctds-toggle-row">
                 <button class="ctds-toggle" id="unitToggle">METRIC</button>
-                <button class="ctds-toggle" id="speedToggle">PACE</button>
-                <button class="ctds-toggle" id="clearBtn">CLEAR</button>
+                <button class="ctds-toggle" id="imperialToggle">IMPERIAL</button>
             </div>
 
             <div class="ctds-circles">
                 <button class="ctds-circle is-active" id="timeBtn" aria-pressed="true">TIME</button>
                 <button class="ctds-circle" id="distanceBtn" aria-pressed="false">DISTANCE</button>
                 <button class="ctds-circle" id="speedBtn" aria-pressed="false">SPEED</button>
+            </div>
+
+            <div class="ctds-reset">
+                <button class="ctds-reset-btn" id="resetBtn">
+                    <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+                    <span class="ctds-reset-text">RESET</span>
+                </button>
             </div>
         </footer>
 
@@ -484,8 +547,8 @@
             constructor() {
                 this.target = 'TIME';
                 this.unitSystem = 'METRIC';
-                this.speedMode = 'PACE';
                 this.computeTimeout = null;
+                this.lastEdited = 'PACE';
                 
                 this.init();
                 this.loadState();
@@ -497,13 +560,15 @@
                 this.timeInput = document.getElementById('timeInput');
                 this.distanceInput = document.getElementById('distanceInput');
                 this.speedInput = document.getElementById('speedInput');
+                this.paceInput = document.getElementById('paceInput');
                 
                 this.distanceLabel = document.getElementById('distanceLabel');
                 this.speedLabel = document.getElementById('speedLabel');
+                this.paceLabel = document.getElementById('paceLabel');
                 
                 this.unitToggle = document.getElementById('unitToggle');
-                this.speedToggle = document.getElementById('speedToggle');
-                this.clearBtn = document.getElementById('clearBtn');
+                this.imperialToggle = document.getElementById('imperialToggle');
+                this.resetBtn = document.getElementById('resetBtn');
                 
                 this.timeBtn = document.getElementById('timeBtn');
                 this.distanceBtn = document.getElementById('distanceBtn');
@@ -511,14 +576,38 @@
             }
 
             attachEventListeners() {
-                [this.timeInput, this.distanceInput, this.speedInput].forEach(input => {
-                    input.addEventListener('input', () => this.debouncedCompute());
+                [this.timeInput, this.distanceInput, this.speedInput, this.paceInput].forEach(input => {
+                    input.addEventListener('input', () => {
+                        if (input === this.paceInput) this.lastEdited = 'PACE';
+                        if (input === this.speedInput) this.lastEdited = 'SPEED';
+                        this.debouncedCompute();
+                    });
                     input.addEventListener('blur', () => this.handleBlur(input));
                 });
 
-                this.unitToggle.addEventListener('click', () => this.toggleUnitSystem());
-                this.speedToggle.addEventListener('click', () => this.toggleSpeedMode());
-                this.clearBtn.addEventListener('click', () => this.clear());
+                this.unitToggle.addEventListener('click', () => this.setUnitSystem('METRIC'));
+                this.imperialToggle.addEventListener('click', () => this.setUnitSystem('IMPERIAL'));
+                // Click clears values, long-press (>=500ms) does factory reset
+                let pressTimer = null;
+                const startPress = () => {
+                    clearTimeout(pressTimer);
+                    pressTimer = setTimeout(() => this.factoryReset(), 500);
+                };
+                const cancelPress = () => {
+                    if (pressTimer) {
+                        clearTimeout(pressTimer);
+                        pressTimer = null;
+                    }
+                };
+                this.resetBtn.addEventListener('mousedown', startPress);
+                this.resetBtn.addEventListener('touchstart', startPress, { passive: true });
+                this.resetBtn.addEventListener('mouseup', () => {
+                    if (pressTimer) { cancelPress(); this.clear(); }
+                });
+                this.resetBtn.addEventListener('touchend', () => {
+                    if (pressTimer) { cancelPress(); this.clear(); }
+                });
+                this.resetBtn.addEventListener('mouseleave', cancelPress);
 
                 this.timeBtn.addEventListener('click', () => this.setTarget('TIME'));
                 this.distanceBtn.addEventListener('click', () => this.setTarget('DISTANCE'));
@@ -539,7 +628,7 @@
                 if (input === this.timeInput) {
                     const auto = this.parseDigitsToTime(raw);
                     if (auto) input.value = auto;
-                } else if (input === this.speedInput && this.speedMode === 'PACE') {
+                } else if (input === this.paceInput) {
                     const auto = this.parseDigitsToPace(raw);
                     if (auto) input.value = auto;
                 }
@@ -575,11 +664,9 @@
                 } else if (input === this.distanceInput) {
                     value = this.normalizeDistance(value);
                 } else if (input === this.speedInput) {
-                    if (this.speedMode === 'PACE') {
-                        value = this.normalizePace(value);
-                    } else {
-                        value = this.normalizeVelocity(value);
-                    }
+                    value = this.normalizeVelocity(value);
+                } else if (input === this.paceInput) {
+                    value = this.normalizePace(value);
                 }
                 
                 input.value = value;
@@ -613,6 +700,7 @@
             }
 
             normalizeDistance(distStr) {
+                distStr = (distStr || '').replace(',', '.');
                 let dist = parseFloat(distStr) || 0;
                 dist = Math.min(99.99, Math.max(0, dist));
                 return dist.toFixed(2);
@@ -639,6 +727,7 @@
             }
 
             normalizeVelocity(velStr) {
+                velStr = (velStr || '').replace(',', '.');
                 let vel = parseFloat(velStr) || 0;
                 vel = Math.min(99.99, Math.max(0, vel));
                 return vel.toFixed(2);
@@ -650,18 +739,10 @@
                 this.saveState();
             }
 
-            toggleUnitSystem() {
+            setUnitSystem(newSystem) {
                 const old = this.unitSystem;
-                this.unitSystem = this.unitSystem === 'METRIC' ? 'IMPERIAL' : 'METRIC';
+                this.unitSystem = newSystem;
                 this.convertUnits(old, this.unitSystem);
-                this.updateUI();
-                this.saveState();
-                this.compute();
-            }
-
-            toggleSpeedMode() {
-                this.speedMode = this.speedMode === 'PACE' ? 'SPEED' : 'PACE';
-                this.convertSpeedMode();
                 this.updateUI();
                 this.saveState();
                 this.compute();
@@ -678,42 +759,18 @@
                 }
 
                 if (this.speedInput.value) {
-                    if (this.speedMode === 'PACE') {
-                        const [mm, ss] = this.speedInput.value.split(':').map(n=>parseInt(n)||0);
-                        let total = mm*60 + ss;
-                        if (fromSystem==='METRIC' && toSystem==='IMPERIAL') total *= CF;
-                        else if (fromSystem==='IMPERIAL' && toSystem==='METRIC') total /= CF;
-                        this.speedInput.value = this.normalizePace(`${Math.floor(total/60)}:${Math.round(total%60)}`);
-                    } else {
-                        let v = parseFloat(this.speedInput.value) || 0;
-                        if (fromSystem==='METRIC' && toSystem==='IMPERIAL') v /= CF;
-                        else if (fromSystem==='IMPERIAL' && toSystem==='METRIC') v *= CF;
-                        this.speedInput.value = Math.min(99.99, v).toFixed(2);
-                    }
+                    let v = parseFloat(this.speedInput.value) || 0;
+                    if (fromSystem==='METRIC' && toSystem==='IMPERIAL') v /= CF;
+                    else if (fromSystem==='IMPERIAL' && toSystem==='METRIC') v *= CF;
+                    this.speedInput.value = Math.min(99.99, v).toFixed(2);
                 }
-            }
 
-            convertSpeedMode() {
-                if (!this.speedInput.value) return;
-                
-                if (this.speedMode === 'SPEED') {
-                    const paceStr = this.speedInput.value;
-                    const parts = paceStr.split(':');
-                    if (parts.length === 2) {
-                        const minutes = parseInt(parts[0]) || 0;
-                        const seconds = parseInt(parts[1]) || 0;
-                        const totalSeconds = minutes * 60 + seconds;
-                        if (totalSeconds > 0) {
-                            const speed = 3600 / totalSeconds;
-                            this.speedInput.value = Math.min(99.99, speed).toFixed(2);
-                        }
-                    }
-                } else {
-                    const speed = parseFloat(this.speedInput.value) || 0;
-                    if (speed > 0) {
-                        const paceSeconds = 3600 / speed;
-                        this.speedInput.value = this.formatPace(paceSeconds);
-                    }
+                if (this.paceInput.value) {
+                    const [mm, ss] = this.paceInput.value.split(':').map(n=>parseInt(n)||0);
+                    let total = mm*60 + ss;
+                    if (fromSystem==='METRIC' && toSystem==='IMPERIAL') total *= CF;
+                    else if (fromSystem==='IMPERIAL' && toSystem==='METRIC') total /= CF;
+                    this.paceInput.value = this.normalizePace(`${Math.floor(total/60)}:${Math.round(total%60)}`);
                 }
             }
 
@@ -721,135 +778,171 @@
                 this.timeInput.value = '';
                 this.distanceInput.value = '';
                 this.speedInput.value = '';
-                
+                this.paceInput.value = '';
+
+                this.updateUI();
+                this.saveState();
+            }
+
+            factoryReset() {
+                this.timeInput.value = '';
+                this.distanceInput.value = '';
+                this.speedInput.value = '';
+                this.paceInput.value = '';
                 this.target = 'TIME';
                 this.unitSystem = 'METRIC';
-                this.speedMode = 'PACE';
-                
                 this.updateUI();
                 this.saveState();
             }
 
             updateUI() {
-                document.querySelectorAll('.ctds-field').forEach(field => {
-                    field.classList.remove('is-target', 'is-nontarget');
+                // Clear target/nontarget classes from all fields
+                const allFields = Array.from(document.querySelectorAll('.ctds-field'));
+                allFields.forEach(field => field.classList.remove('is-target', 'is-nontarget'));
+
+                // Mark target field(s)
+                const timeField = document.querySelector('.ctds-field--time');
+                const distanceField = document.querySelector('.ctds-field--distance');
+                const speedField = document.querySelector('.ctds-field--speed');
+                const paceField = document.querySelector('.ctds-field--pace');
+
+                if (this.target === 'TIME') {
+                    timeField.classList.add('is-target');
+                } else if (this.target === 'DISTANCE') {
+                    distanceField.classList.add('is-target');
+                } else if (this.target === 'SPEED') {
+                    // Lock BOTH speed and pace (both are derived from time+distance)
+                    speedField.classList.add('is-target');
+                    paceField.classList.add('is-target');
+                }
+
+                // Anything not marked as target becomes non-target (dimmed, editable)
+                allFields.forEach(field => {
+                    if (!field.classList.contains('is-target')) field.classList.add('is-nontarget');
                 });
-                
-                const targetField = document.querySelector(`.ctds-field--${this.target.toLowerCase()}`);
-                targetField.classList.add('is-target');
-                
-                document.querySelectorAll('.ctds-field').forEach(field => {
-                    if (!field.classList.contains('is-target')) {
-                        field.classList.add('is-nontarget');
-                    }
-                });
-                
-                [this.timeInput, this.distanceInput, this.speedInput].forEach(input => {
-                    const isTarget = input.closest('.ctds-field').classList.contains('is-target');
+
+                // Enable/disable inputs based on is-target flag
+                [this.timeInput, this.distanceInput, this.speedInput, this.paceInput].forEach(input => {
+                    const field = input.closest('.ctds-field');
+                    const isTarget = field.classList.contains('is-target');
                     input.disabled = isTarget;
-                    input.setAttribute('aria-disabled', isTarget.toString());
+                    input.setAttribute('aria-disabled', String(isTarget));
                 });
-                
+
+                // Update labels based on unit system
                 this.distanceLabel.textContent = this.unitSystem === 'METRIC' ? 'KM' : 'MI';
-                
-                // Dynamic Speed/Pace field behavior
-                const speedLabel = document.getElementById('speedLabel');
-                const speedInput = document.getElementById('speedInput');
-                if (this.speedMode === 'PACE') {
-                    if (this.unitSystem === 'METRIC') {
-                        speedLabel.textContent = 'MIN/KM';
-                        speedInput.placeholder = '00:00';
-                    } else {
-                        speedLabel.textContent = 'MIN/MI';
-                        speedInput.placeholder = '00:00';
-                    }
-                } else { // SPEED mode
-                    if (this.unitSystem === 'METRIC') {
-                        speedLabel.textContent = 'KM/H';
-                        speedInput.placeholder = '00.00';
-                    } else {
-                        speedLabel.textContent = 'MPH';
-                        speedInput.placeholder = '00.00';
-                    }
-                }
-                
-                // Set input modes and patterns based on field type and mode
-                if (this.speedMode === 'PACE') {
-                    speedInput.setAttribute('inputmode', 'numeric');
-                    speedInput.setAttribute('pattern', '\\d{1,2}:\\d{2}');
-                } else {
-                    speedInput.setAttribute('inputmode', 'decimal');
-                    speedInput.removeAttribute('pattern');
-                }
-                
-                // Time input gets numeric mode and pattern when editable
-                if (!this.timeInput.disabled) {
-                    this.timeInput.setAttribute('inputmode', 'numeric');
-                    this.timeInput.setAttribute('pattern', '\\d{1,2}:\\d{2}:\\d{2}');
-                } else {
-                    this.timeInput.removeAttribute('inputmode');
-                    this.timeInput.removeAttribute('pattern');
-                }
-                
-                this.unitToggle.textContent = this.unitSystem;
-                this.speedToggle.textContent = this.speedMode;
-                
-                // Let CSS know current speed mode so the speed field can auto-resize
-                document.querySelector('.ctds-app')?.setAttribute('data-speed-mode', this.speedMode);
-                
+                this.speedLabel.textContent = this.unitSystem === 'METRIC' ? 'KM/H' : 'MPH';
+                this.paceLabel.textContent = this.unitSystem === 'METRIC' ? 'MIN/KM' : 'MIN/MI';
+
+                // Set input modes and patterns
+                this.timeInput.setAttribute('inputmode', 'numeric');
+                this.timeInput.setAttribute('pattern', '\\d{1,2}:\\d{2}:\\d{2}');
+
+                this.distanceInput.setAttribute('inputmode', 'decimal');
+                this.distanceInput.removeAttribute('pattern');
+
+                this.speedInput.setAttribute('inputmode', 'decimal');
+                this.speedInput.removeAttribute('pattern');
+
+                this.paceInput.setAttribute('inputmode', 'numeric');
+                this.paceInput.setAttribute('pattern', '\\d{1,2}:\\d{2}');
+
+                // Update toggle button states
+                this.unitToggle.classList.toggle('is-active', this.unitSystem === 'METRIC');
+                this.imperialToggle.classList.toggle('is-active', this.unitSystem === 'IMPERIAL');
+
+                // Update circle buttons
                 [this.timeBtn, this.distanceBtn, this.speedBtn].forEach(btn => {
                     btn.classList.remove('is-active');
                     btn.setAttribute('aria-pressed', 'false');
                 });
-                
                 const activeBtn = document.getElementById(`${this.target.toLowerCase()}Btn`);
-                activeBtn.classList.add('is-active');
-                activeBtn.setAttribute('aria-pressed', 'true');
+                if (activeBtn) {
+                    activeBtn.classList.add('is-active');
+                    activeBtn.setAttribute('aria-pressed', 'true');
+                }
             }
 
             compute() {
                 const timeStr = this.timeInput.value;
                 const distanceStr = this.distanceInput.value;
                 const speedStr = this.speedInput.value;
+                const paceStr = this.paceInput.value;
                 
                 const time = this.parseTime(timeStr);
                 const distance = parseFloat(distanceStr) || 0;
-                const speed = this.speedMode === 'PACE' ? this.parsePace(speedStr) : parseFloat(speedStr) || 0;
+                const speed = parseFloat(speedStr) || 0;
+                const pace = this.parsePace(paceStr);
+                
+                const hasV = speed > 0, hasP = pace > 0;
+                const pickPace  = (hasP && !hasV) || (hasP && hasV && this.lastEdited==='PACE');
+                const pickSpeed = (hasV && !hasP) || (hasP && hasV && this.lastEdited==='SPEED');
                 
                 if (this.target === 'TIME') {
-                    if (distance > 0 && speed > 0) {
-                        let result;
-                        if (this.speedMode === 'PACE') {
-                            result = distance * speed;
-                        } else {
-                            result = (distance / speed) * 3600;
+                    if (distance > 0) {
+                        if (pickSpeed) {
+                            // Calculate from speed: time = distance / speed
+                            const result = (distance / speed) * 3600;
+                            this.timeInput.value = this.formatTime(result);
+                        } else if (pickPace) {
+                            // Calculate from pace: time = distance * pace
+                            const result = distance * pace;
+                            this.timeInput.value = this.formatTime(result);
                         }
-                        this.timeInput.value = this.formatTime(result);
                     }
                 } else if (this.target === 'DISTANCE') {
-                    if (time > 0 && speed > 0) {
-                        let result;
-                        if (this.speedMode === 'PACE') {
-                            result = time / speed;
-                        } else {
-                            result = speed * (time / 3600);
+                    if (time > 0) {
+                        if (pickSpeed) {
+                            // Calculate from speed: distance = speed * (time / 3600)
+                            const result = speed * (time / 3600);
+                            this.distanceInput.value = Math.min(99.99, result).toFixed(2);
+                        } else if (pickPace) {
+                            // Calculate from pace: distance = time / pace
+                            const result = time / pace;
+                            this.distanceInput.value = Math.min(99.99, result).toFixed(2);
                         }
-                        this.distanceInput.value = Math.min(99.99, result).toFixed(2);
                     }
                 } else if (this.target === 'SPEED') {
                     if (time > 0 && distance > 0) {
-                        if (this.speedMode === 'PACE') {
-                            const result = time / distance;
-                            this.speedInput.value = this.formatPace(result);
+                        const vNew = distance / (time / 3600);
+                        const pNew = time / distance;
+                        this.speedInput.value = Math.min(99.99, vNew).toFixed(2);
+                        this.paceInput.value  = this.formatPace(pNew);
+                    }
+                }
+
+                // --- keep speed/pace in sync when time & distance are known ---
+                {
+                    const tNow = this.parseTime(this.timeInput.value);
+                    const dNow = parseFloat(this.distanceInput.value) || 0;
+
+                    if (tNow > 0 && dNow > 0) {
+                        const vNew = dNow / (tNow / 3600); // units/hour
+                        const pNew = tNow / dNow;          // sec/unit
+
+                        const hasSpeed = !!(parseFloat(this.speedInput.value) || 0);
+                        const hasPace  = !!this.parsePace(this.paceInput.value);
+
+                        if (this.lastEdited === 'PACE') {
+                            // user is driving with pace; back-fill speed
+                            this.speedInput.value = Math.min(99.99, vNew).toFixed(2);
+                        } else if (this.lastEdited === 'SPEED') {
+                            // user is driving with speed; back-fill pace
+                            this.paceInput.value = this.formatPace(pNew);
                         } else {
-                            const result = distance / (time / 3600);
-                            this.speedInput.value = Math.min(99.99, result).toFixed(2);
+                            // neither explicitly “last touched”: fill whichever is empty, or both
+                            if (!hasSpeed) this.speedInput.value = Math.min(99.99, vNew).toFixed(2);
+                            if (!hasPace)  this.paceInput.value  = this.formatPace(pNew);
                         }
                     }
                 }
 
                 const ann = document.getElementById('ann');
-                if (ann) ann.textContent = `Updated: time ${this.timeInput.value || '—'}, distance ${this.distanceInput.value || '—'}, ${this.speedMode==='PACE' ? 'pace' : 'speed'} ${this.speedInput.value || '—'}`;
+                if (ann) {
+                    const prev = this._lastAnn || '';
+                    const msg = `Updated: time ${this.timeInput.value || '—'}, distance ${this.distanceInput.value || '—'}, speed ${this.speedInput.value || '—'}, pace ${this.paceInput.value || '—'}`;
+                    if (msg !== prev) { ann.textContent = msg; this._lastAnn = msg; }
+                }
                 
                 this.saveState();
             }
@@ -896,11 +989,11 @@
                 const state = {
                     target: this.target,
                     unitSystem: this.unitSystem,
-                    speedMode: this.speedMode,
                     values: {
                         time: this.timeInput.value,
                         distance: this.distanceInput.value,
-                        speed: this.speedInput.value
+                        speed: this.speedInput.value,
+                        pace: this.paceInput.value
                     }
                 };
                 localStorage.setItem('pace-calculator-state', JSON.stringify(state));
@@ -913,12 +1006,12 @@
                         const state = JSON.parse(saved);
                         this.target = state.target || 'TIME';
                         this.unitSystem = state.unitSystem || 'METRIC';
-                        this.speedMode = state.speedMode || 'PACE';
                         
                         if (state.values) {
                             if (state.values.time) this.timeInput.value = state.values.time;
                             if (state.values.distance) this.distanceInput.value = state.values.distance;
                             if (state.values.speed) this.speedInput.value = state.values.speed;
+                            if (state.values.pace) this.paceInput.value = state.values.pace;
                         }
                     }
                 } catch (e) {
