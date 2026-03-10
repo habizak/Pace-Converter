@@ -361,10 +361,10 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         showWarning(state.warning);
 
         if (hasLoadedState) {
-            requestAnimationFrame(() => {
+            requestAnimationFrame(() => requestAnimationFrame(() => {
                 renderChart();
                 renderZones();
-            });
+            }));
             renderTotal();
         } else {
             elements.chartRegion.innerHTML = '';
