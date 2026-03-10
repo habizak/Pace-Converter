@@ -8,73 +8,95 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,200..700,0..1,-50..200"/>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="ctds-app">
-        <header class="ctds-header">/DTS-Calc</header>
-
-        <main class="ctds-main">
-            <div class="ctds-field ctds-field--time is-target">
-                <label class="ctds-label" for="timeInput" id="timeLabel">HH:MM:SS</label>
-                <input type="text"
-                       class="ctds-value"
-                       id="timeInput"
-                       placeholder="00:00:00"
-                       aria-describedby="timeLabel"
-                       aria-disabled="true">
+        <header class="ctds-header">
+            <span class="ctds-header-title">/DTS-Calc</span>
+            <div class="ctds-mode-toggle">
+                <span class="ctds-mode-label">Pace</span>
+                <button class="ctds-mode-btn is-active" id="modeSingle" type="button">Single</button>
+                <button class="ctds-mode-btn" id="modeMulti" type="button">Multi</button>
             </div>
+        </header>
 
-            <div class="ctds-field ctds-field--distance is-nontarget">
-                <label class="ctds-label" for="distanceInput" id="distanceLabel">KM</label>
-                <input type="text"
-                       class="ctds-value"
-                       id="distanceInput"
-                       placeholder="00.00"
-                       aria-describedby="distanceLabel"
-                       inputmode="decimal">
-            </div>
+        <div class="ctds-single-shell" id="singlePaceApp">
+            <main class="ctds-main">
+                <div class="ctds-field ctds-field--time is-target">
+                    <label class="ctds-label" for="timeInput" id="timeLabel">HH:MM:SS</label>
+                    <input type="text"
+                           class="ctds-value"
+                           id="timeInput"
+                           placeholder="00:00:00"
+                           aria-describedby="timeLabel"
+                           aria-disabled="true">
+                </div>
 
-            <div class="ctds-field ctds-field--speed is-nontarget">
-                <label class="ctds-label" for="speedInput" id="speedLabel">KM/H</label>
-                <input type="text"
-                       class="ctds-value"
-                       id="speedInput"
-                       placeholder="00.00"
-                       aria-describedby="speedLabel"
-                       inputmode="decimal">
-            </div>
+                <div class="ctds-field ctds-field--distance is-nontarget">
+                    <label class="ctds-label" for="distanceInput" id="distanceLabel">KM</label>
+                    <input type="text"
+                           class="ctds-value"
+                           id="distanceInput"
+                           placeholder="00.00"
+                           aria-describedby="distanceLabel"
+                           inputmode="decimal">
+                </div>
 
-            <div class="ctds-field ctds-field--pace is-nontarget">
-                <label class="ctds-label" for="paceInput" id="paceLabel">MIN/KM</label>
-                <input type="text"
-                       class="ctds-value"
-                       id="paceInput"
-                       placeholder="00:00"
-                       aria-describedby="paceLabel"
-                       inputmode="numeric">
-            </div>
-        </main>
+                <div class="ctds-field ctds-field--speed is-nontarget">
+                    <label class="ctds-label" for="speedInput" id="speedLabel">KM/H</label>
+                    <input type="text"
+                           class="ctds-value"
+                           id="speedInput"
+                           placeholder="00.00"
+                           aria-describedby="speedLabel"
+                           inputmode="decimal">
+                </div>
 
-        <footer class="ctds-controls">
-            <div class="ctds-toggle-row">
-                <button class="ctds-toggle" id="unitToggle">METRIC</button>
-                <button class="ctds-toggle" id="imperialToggle">IMPERIAL</button>
-            </div>
+                <div class="ctds-field ctds-field--pace is-nontarget">
+                    <label class="ctds-label" for="paceInput" id="paceLabel">MIN/KM</label>
+                    <input type="text"
+                           class="ctds-value"
+                           id="paceInput"
+                           placeholder="00:00"
+                           aria-describedby="paceLabel"
+                           inputmode="numeric">
+                </div>
+            </main>
 
-            <div class="ctds-circles">
-                <button class="ctds-circle is-active" id="timeBtn" aria-pressed="true">TIME</button>
-                <button class="ctds-circle" id="distanceBtn" aria-pressed="false">DISTANCE</button>
-                <button class="ctds-circle" id="speedBtn" aria-pressed="false">SPEED</button>
-            </div>
+            <footer class="ctds-controls">
+                <div class="ctds-toggle-row">
+                    <button class="ctds-toggle" id="unitToggle">METRIC</button>
+                    <button class="ctds-toggle" id="imperialToggle">IMPERIAL</button>
+                </div>
 
-            <div class="ctds-reset">
-                <button class="ctds-reset-btn" id="resetBtn">
-                    <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
-                    <span class="ctds-reset-text">RESET</span>
-                </button>
-            </div>
-        </footer>
+                <div class="ctds-circles">
+                    <button class="ctds-circle is-active" id="timeBtn" aria-pressed="true">TIME</button>
+                    <button class="ctds-circle" id="distanceBtn" aria-pressed="false">DISTANCE</button>
+                    <button class="ctds-circle" id="speedBtn" aria-pressed="false">SPEED</button>
+                </div>
+
+                <div class="ctds-reset">
+                    <button class="ctds-reset-btn" id="resetBtn">
+                        <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
+                        <span class="ctds-reset-text">RESET</span>
+                    </button>
+                </div>
+            </footer>
+        </div>
+
+        <div class="ctds-multi-shell" id="multiPaceApp" hidden>
+            <main class="ctds-multi-main">
+                <div class="ctds-upload-state" id="uploadState">
+                    <button class="ctds-upload-btn" id="uploadGpxBtn" type="button">↑ Upload .gpx</button>
+                    <p class="ctds-upload-hint">Accepts .gpx files only · Routes between 5km and 45km</p>
+                </div>
+            </main>
+            <footer class="ctds-multi-footer">
+                <button class="ctds-reset-btn" id="multiReset" type="button">↺ Reset</button>
+            </footer>
+        </div>
 
         <div id="ann" role="status" style="position:absolute;left:-9999px;"></div>
     </div>

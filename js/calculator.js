@@ -416,4 +416,29 @@ class PaceCalculator {
 
 document.addEventListener('DOMContentLoaded', () => {
     new PaceCalculator();
+
+    const modeSingle = document.getElementById('modeSingle');
+    const modeMulti = document.getElementById('modeMulti');
+    const singleApp = document.getElementById('singlePaceApp');
+    const multiApp = document.getElementById('multiPaceApp');
+
+    if (!modeSingle || !modeMulti || !singleApp || !multiApp) {
+        return;
+    }
+
+    function setMode(mode) {
+        const isMulti = mode === 'multi';
+        document.body.classList.toggle('is-multi-pace', isMulti);
+        singleApp.hidden = isMulti;
+        multiApp.hidden = !isMulti;
+        modeSingle.classList.toggle('is-active', !isMulti);
+        modeMulti.classList.toggle('is-active', isMulti);
+        localStorage.setItem('pace-mode', isMulti ? 'multi' : 'single');
+    }
+
+    modeSingle.addEventListener('click', () => setMode('single'));
+    modeMulti.addEventListener('click', () => setMode('multi'));
+
+    const savedMode = localStorage.getItem('pace-mode') || 'single';
+    setMode(savedMode);
 });
