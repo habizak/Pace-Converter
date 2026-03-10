@@ -303,7 +303,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
                 <span class="ctds-multi-zone-inner">
                     <span class="ctds-multi-zone-copy">
                         <span class="ctds-multi-zone-title-row">
-                            <span class="ctds-multi-zone-title">Zone ${index + 1}</span>
+                            <span class="ctds-multi-zone-title">Z${index + 1}</span>
                             <span class="ctds-multi-zone-distance">${formatDistance(metrics.distanceKm)}</span>
                         </span>
                         <span class="ctds-multi-zone-duration">${metrics.durationText || '\u2014'}</span>
@@ -344,7 +344,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         elements.addZoneBtn.disabled = !canAddZone();
 
         if (inEditMode) {
-            elements.selectedZoneLabel.textContent = `Zone ${state.zones.findIndex(zone => zone.id === selected.id) + 1} Pace`;
+            elements.selectedZoneLabel.textContent = `Z${state.zones.findIndex(zone => zone.id === selected.id) + 1} Pace`;
             elements.paceInput.value = selected.paceSeconds ? formatPace(selected.paceSeconds) : '';
         } else {
             elements.paceInput.value = '';
