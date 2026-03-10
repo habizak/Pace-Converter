@@ -78,6 +78,10 @@
             box-sizing: border-box;
         }
 
+        [hidden] {
+            display: none !important;
+        }
+
         body {
             font-family: var(--font-family);
             font-weight: var(--font-weight-default);
@@ -85,6 +89,11 @@
             color: var(--color-text);
             min-height: auto;
             padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+            transition: background-color 150ms ease;
+        }
+
+        body.is-multi-pace {
+            background-color: #111111;
         }
 
         .ctds-app {
@@ -101,11 +110,92 @@
         }
 
         .ctds-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
             font-size: var(--font-size-title);
             font-weight: var(--font-weight-default);
             text-transform: uppercase;
             letter-spacing: var(--letter-spacing-label);
             line-height: var(--line-height-label);
+        }
+
+        .ctds-header-title {
+            flex: 0 0 auto;
+        }
+
+        .ctds-mode-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+            flex: 0 0 auto;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+
+        .ctds-mode-label {
+            font-size: var(--font-size-button);
+            font-weight: var(--font-weight-default);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-button);
+            line-height: var(--line-height-button);
+            margin-right: 12px;
+            white-space: nowrap;
+        }
+
+        .ctds-mode-btn {
+            height: var(--toggle-h);
+            background: transparent;
+            border: var(--toggle-bw) solid var(--color-border);
+            border-radius: var(--toggle-br);
+            color: var(--color-text);
+            font-family: var(--font-family);
+            font-size: var(--font-size-button);
+            font-weight: var(--font-weight-default);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-button);
+            line-height: var(--line-height-button);
+            padding: var(--toggle-py) var(--toggle-px);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            min-width: 48px;
+            min-height: 48px;
+        }
+
+        .ctds-mode-btn + .ctds-mode-btn {
+            border-left: none;
+            box-shadow: inset 1px 0 0 0 #FFF;
+        }
+
+        .ctds-mode-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .ctds-mode-btn:active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .ctds-mode-btn:focus {
+            outline: none;
+        }
+
+        .ctds-mode-btn:focus-visible {
+            outline: 1px solid rgba(255,255,255,.75);
+            outline-offset: 2px;
+        }
+
+        .ctds-mode-btn.is-active {
+            background-color: var(--color-active-circle-fill);
+            color: #000;
+        }
+
+        .ctds-single-shell,
+        .ctds-multi-shell {
+            display: flex;
+            flex: 1 1 auto;
+            flex-direction: column;
+            min-height: 0;
         }
 
         .ctds-main {
@@ -114,6 +204,66 @@
             flex-direction: column;
             min-height: 0;
             padding-bottom: var(--footer-h);
+        }
+
+        .ctds-multi-main {
+            flex: 1 1 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+            padding-bottom: var(--footer-h);
+        }
+
+        .ctds-upload-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            text-align: center;
+            padding: 0 24px;
+        }
+
+        .ctds-upload-btn {
+            background: transparent;
+            border: var(--toggle-bw) solid var(--color-border);
+            color: var(--color-text);
+            font-family: var(--font-family);
+            font-size: var(--font-size-button);
+            font-weight: var(--font-weight-default);
+            text-transform: uppercase;
+            letter-spacing: var(--letter-spacing-button);
+            line-height: var(--line-height-button);
+            padding: var(--toggle-py) var(--toggle-px);
+            min-height: 48px;
+            cursor: pointer;
+        }
+
+        .ctds-upload-btn:focus {
+            outline: none;
+        }
+
+        .ctds-upload-btn:focus-visible {
+            outline: 1px solid rgba(255,255,255,.75);
+            outline-offset: 2px;
+        }
+
+        .ctds-upload-hint {
+            font-size: var(--font-size-label);
+            line-height: 1;
+            opacity: 0.8;
+            text-transform: none;
+        }
+
+        .ctds-multi-footer {
+            display: flex;
+            justify-content: flex-start;
+            padding-bottom: calc(var(--circles-bottom) + env(safe-area-inset-bottom, 0));
+            position: absolute;
+            left: var(--safe-padding-left);
+            right: var(--safe-padding-right);
+            bottom: env(safe-area-inset-bottom, 0);
         }
 
         .ctds-controls {
@@ -457,6 +607,6 @@
             .ctds-field--speed .ctds-label,
             .ctds-field--pace .ctds-label { color:#FFF; }
         }
-    @media (max-width: 480px) {
-      :root { --circle-d: 88px; }
-    }
+        @media (max-width: 480px) {
+            :root { --circle-d: 88px; }
+        }
