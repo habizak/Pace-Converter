@@ -274,18 +274,12 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
 
         const heights = state.segments.map(segment => segment.heightRatio);
         const fallback = heights.every(value => value === 0);
-        const segmentCount = state.segments.length;
-
-        // Calculate bar thickness to fill available panel height exactly
-        const panelHeight = elements.chartRegion.getBoundingClientRect().height;
-        const barHeight = Math.max(1, Math.floor((panelHeight - segmentCount) / segmentCount));
 
         state.segments.forEach(segment => {
             const bar = document.createElement('div');
             bar.className = 'ctds-multi-bar';
             const ratio = fallback ? 0.5 : segment.heightRatio;
             bar.style.width = `${clamp(ratio, 0.12, 1) * 100}%`;
-            bar.style.height = `${barHeight}px`;
             barWrap.appendChild(bar);
         });
 
