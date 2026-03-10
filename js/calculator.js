@@ -412,21 +412,59 @@ class PaceCalculator {
             // Use defaults
         }
     }
+
+    getSeedPace() {
+        const pace = this.paceInput.value.trim();
+        if (!pace) {
+            return null;
+        }
+
+        const normalized = this.normalizePace(pace);
+        const seconds = this.parsePace(normalized);
+        return seconds > 0 ? seconds : null;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    new PaceCalculator();
+    const calculator = new PaceCalculator();
 
     const modeSingle = document.getElementById('modeSingle');
     const modeMulti = document.getElementById('modeMulti');
     const singleApp = document.getElementById('singlePaceApp');
     const multiApp = document.getElementById('multiPaceApp');
+    const announcer = document.getElementById('ann');
 
-    if (!modeSingle || !modeMulti || !singleApp || !multiApp) {
+    if (!modeSingle || !modeMulti || !singleApp || !multiApp || !announcer) {
         return;
     }
 
-    function setMode(mode) {
+    let multiController = null;
+    let multiModulePromise = null;
+
+    function announce(message) {
+        announcer.textContent = message;
+    }
+
+    async function ensureMultiController() {
+        if (multiController) {
+            return multiController;
+        }
+
+        if (!multiModulePromise) {
+            multiModulePromise = import('./multi-pace.js');
+        }
+
+        const { initMultiPaceApp } = await multiModulePromise;
+        multiController = initMultiPaceApp({
+            root: multiApp,
+            storageKey: 'multi-pace-state',
+            announce,
+            getSeedPace: () => calculator.getSeedPace(),
+        });
+        return multiController;
+    }
+
+    async function setMode(mode) {
         const isMulti = mode === 'multi';
         document.body.classList.toggle('is-multi-pace', isMulti);
         singleApp.hidden = isMulti;
@@ -434,11 +472,18 @@ document.addEventListener('DOMContentLoaded', () => {
         modeSingle.classList.toggle('is-active', !isMulti);
         modeMulti.classList.toggle('is-active', isMulti);
         localStorage.setItem('pace-mode', isMulti ? 'multi' : 'single');
+
+        if (isMulti) {
+            const controller = await ensureMultiController();
+            controller.activate();
+        } else if (multiController) {
+            multiController.deactivate();
+        }
     }
 
-    modeSingle.addEventListener('click', () => setMode('single'));
-    modeMulti.addEventListener('click', () => setMode('multi'));
+    modeSingle.addEventListener('click', () => { void setMode('single'); });
+    modeMulti.addEventListener('click', () => { void setMode('multi'); });
 
     const savedMode = localStorage.getItem('pace-mode') || 'single';
-    setMode(savedMode);
+    void setMode(savedMode);
 });
