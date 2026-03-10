@@ -285,6 +285,41 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         });
 
         elements.chartRegion.appendChild(barWrap);
+        renderBoundaryRules();
+    }
+
+    function renderBoundaryRules() {
+        elements.chartRegion.querySelectorAll('.ctds-multi-boundary').forEach(el => el.remove());
+
+        const totalSegments = state.segments.length;
+        if (!totalSegments) return;
+
+        state.zones.slice(1).forEach(zone => {
+            const rule = document.createElement('div');
+            rule.className = 'ctds-multi-boundary';
+            const topPct = (zone.startIndex / totalSegments) * 100;
+            rule.style.top = `${topPct}%`;
+            elements.chartRegion.appendChild(rule);
+        });
+    }
+
+    function highlightZone(zoneIndex) {
+        const bars = elements.chartRegion.querySelectorAll('.ctds-multi-bar');
+        const zone = state.zones[zoneIndex];
+        if (!zone) return;
+
+        bars.forEach((bar, i) => {
+            if (i >= zone.startIndex && i <= zone.endIndex) {
+                bar.style.opacity = '1';
+            } else {
+                bar.style.opacity = '0.25';
+            }
+        });
+    }
+
+    function clearHighlight() {
+        const bars = elements.chartRegion.querySelectorAll('.ctds-multi-bar');
+        bars.forEach(bar => { bar.style.opacity = '1'; });
     }
 
     function renderZones() {
@@ -366,6 +401,14 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
             requestAnimationFrame(() => requestAnimationFrame(() => {
                 renderChart();
                 renderZones();
+                renderBoundaryRules();
+                if (state.editing && state.selectedZoneId) {
+                    highlightZone(state.zones.findIndex(z => z.id === state.selectedZoneId));
+                } else if (state.dragging) {
+                    highlightZone(state.dragging.leftIndex);
+                } else {
+                    clearHighlight();
+                }
             }));
             renderTotal();
         } else {
@@ -501,6 +544,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         state.editing = false;
         persist();
         render();
+        clearHighlight();
     }
 
     function selectZone(zoneId) {
@@ -528,6 +572,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         showWarning('');
         persist();
         render();
+        clearHighlight();
     }
 
     function commitPace() {
@@ -543,6 +588,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         state.editing = false;
         persist();
         render();
+        clearHighlight();
     }
 
     function deleteZone() {
@@ -570,6 +616,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         
         persist();
         render();
+        clearHighlight();
         announce('Zone deleted returning to overview.');
     }
 
@@ -594,6 +641,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
             startY: clientY,
             initialZones: cloneState(state.zones),
         };
+        highlightZone(leftIndex);
     }
 
     function moveDrag(clientY) {
@@ -617,6 +665,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         renderZones();
         syncFooter();
         renderTotal();
+        renderBoundaryRules();
     }
 
     function endDrag() {
@@ -627,6 +676,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         state.dragging = null;
         persist();
         render();
+        clearHighlight();
     }
 
     function handlePointerDown(event) {

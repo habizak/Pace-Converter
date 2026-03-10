@@ -458,6 +458,17 @@ body.is-multi-pace .ctds-mode-btn.is-active {
     min-height: 1px;
     border-left: none;
     background: var(--text);
+    transition: opacity 120ms ease;
+}
+
+.ctds-multi-boundary {
+    position: absolute;
+    left: 0;
+    width: 200%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+    z-index: 10;
 }
 
 .ctds-multi-zones {
