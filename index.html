@@ -6,8 +6,7 @@
     <title>/DTS-Calc</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Handjet:wght@300;400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,200..700,0..1,-50..200"/>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -15,7 +14,7 @@
     <div class="ctds-app">
         <header class="ctds-header">
             <span class="ctds-header-title">/DTS-Calc</span>
-            <div class="ctds-mode-toggle">
+            <div class="ctds-mode-toggle" aria-label="Mode toggle">
                 <span class="ctds-mode-label">Pace</span>
                 <button class="ctds-mode-btn is-active" id="modeSingle" type="button">Single</button>
                 <button class="ctds-mode-btn" id="modeMulti" type="button">Multi</button>
@@ -67,20 +66,20 @@
 
             <footer class="ctds-controls">
                 <div class="ctds-toggle-row">
-                    <button class="ctds-toggle" id="unitToggle">METRIC</button>
-                    <button class="ctds-toggle" id="imperialToggle">IMPERIAL</button>
+                    <button class="ctds-toggle" id="unitToggle" type="button">Metric</button>
+                    <button class="ctds-toggle" id="imperialToggle" type="button">Imperial</button>
                 </div>
 
                 <div class="ctds-circles">
-                    <button class="ctds-circle is-active" id="timeBtn" aria-pressed="true">TIME</button>
-                    <button class="ctds-circle" id="distanceBtn" aria-pressed="false">DISTANCE</button>
-                    <button class="ctds-circle" id="speedBtn" aria-pressed="false">SPEED</button>
+                    <button class="ctds-circle is-active" id="timeBtn" aria-pressed="true" type="button">Time</button>
+                    <button class="ctds-circle" id="distanceBtn" aria-pressed="false" type="button">Distance</button>
+                    <button class="ctds-circle" id="speedBtn" aria-pressed="false" type="button">Speed</button>
                 </div>
 
                 <div class="ctds-reset">
-                    <button class="ctds-reset-btn" id="resetBtn">
-                        <span class="material-symbols-outlined" aria-hidden="true">restart_alt</span>
-                        <span class="ctds-reset-text">RESET</span>
+                    <button class="ctds-reset-btn" id="resetBtn" type="button">
+                        <span class="ctds-reset-icon" aria-hidden="true">↺</span>
+                        <span class="ctds-reset-text">Reset</span>
                     </button>
                 </div>
             </footer>
@@ -88,17 +87,69 @@
 
         <div class="ctds-multi-shell" id="multiPaceApp" hidden>
             <main class="ctds-multi-main">
-                <div class="ctds-upload-state" id="uploadState">
-                    <button class="ctds-upload-btn" id="uploadGpxBtn" type="button">↑ Upload .gpx</button>
-                    <p class="ctds-upload-hint">Accepts .gpx files only · Routes between 5km and 45km</p>
+                <div class="ctds-multi-status" id="multiStatusArea" aria-live="polite">
+                    <p class="ctds-multi-message ctds-multi-message--error" id="multiError" hidden></p>
+                    <p class="ctds-multi-message ctds-multi-message--warning" id="multiWarning" hidden></p>
                 </div>
+
+                <section class="ctds-multi-empty" id="multiEmptyState">
+                    <button class="ctds-action-btn ctds-action-btn--full" id="uploadGpxBtn" type="button">
+                        <span aria-hidden="true">↥</span>
+                        <span>Upload .gpx</span>
+                    </button>
+                    <div class="ctds-multi-hint" id="uploadState">
+                        <p>Routes between 5.0km and 45.0km.</p>
+                        <p>Segmented into 100m pace blocks.</p>
+                    </div>
+                </section>
+
+                <section class="ctds-multi-loaded" id="multiLoadedState" hidden>
+                    <div class="ctds-multi-panel" id="multiChartPanel">
+                        <div class="ctds-multi-chart-region" id="multiChartRegion" aria-label="Elevation segment chart"></div>
+                        <div class="ctds-multi-zones" id="multiZones" role="list" aria-label="Pace zones"></div>
+                    </div>
+
+                    <div class="ctds-multi-total" id="multiTotalRow">
+                        <span class="ctds-multi-total-label">Total Time</span>
+                        <span class="ctds-multi-total-value" id="multiTotalTime"></span>
+                    </div>
+                </section>
+
+                <input id="gpxFileInput" type="file" accept=".gpx,application/gpx+xml" hidden>
             </main>
+
             <footer class="ctds-multi-footer">
-                <button class="ctds-reset-btn" id="multiReset" type="button">↺ Reset</button>
+                <div class="ctds-multi-actions" id="multiActionRow">
+                    <button class="ctds-action-btn" id="multiUploadBtn" type="button">
+                        <span aria-hidden="true">↥</span>
+                        <span>Upload .gpx</span>
+                    </button>
+                    <button class="ctds-action-btn ctds-action-btn--active" id="addZoneBtn" type="button">+ Add Zone</button>
+                </div>
+
+                <div class="ctds-multi-editor" id="multiEditorRow" hidden>
+                    <div class="ctds-multi-editor-copy">
+                        <span class="ctds-multi-editor-label" id="selectedZoneLabel">Zone 1 Pace</span>
+                        <input class="ctds-multi-editor-input"
+                               id="zonePaceInput"
+                               type="text"
+                               inputmode="numeric"
+                               placeholder="MM:SS"
+                               aria-label="Zone pace">
+                    </div>
+                    <button class="ctds-action-btn ctds-action-btn--active" id="confirmZoneBtn" type="button">Confirm</button>
+                </div>
+
+                <div class="ctds-reset ctds-reset--multi" id="multiResetRow">
+                    <button class="ctds-reset-btn" id="multiReset" type="button">
+                        <span class="ctds-reset-icon" aria-hidden="true">↺</span>
+                        <span class="ctds-reset-text">Reset</span>
+                    </button>
+                </div>
             </footer>
         </div>
 
-        <div id="ann" role="status" style="position:absolute;left:-9999px;"></div>
+        <div id="ann" role="status" aria-live="polite" class="ctds-announcer"></div>
     </div>
 
     <script type="module" src="js/calculator.js"></script>
