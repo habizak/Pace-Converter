@@ -150,6 +150,14 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
 
     let listenersBound = false;
 
+    function clearPersistedState() {
+        try {
+            localStorage.removeItem(storageKey);
+        } catch {
+            // Storage is optional; keep the current session running.
+        }
+    }
+
     function getPersistedState() {
         try {
             const raw = localStorage.getItem(storageKey);
@@ -159,6 +167,18 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
 
             const parsed = JSON.parse(raw);
             if (!parsed?.route || !Array.isArray(parsed?.segments)) {
+                return null;
+            }
+
+            const firstSegment = parsed.segments[0];
+            if (
+                !Number.isFinite(parsed.route.totalKm) || parsed.route.totalKm <= 0 ||
+                !firstSegment ||
+                !Number.isFinite(firstSegment.startKm) ||
+                !Number.isFinite(firstSegment.endKm) ||
+                !Number.isFinite(firstSegment.heightRatio)
+            ) {
+                clearPersistedState();
                 return null;
             }
 
@@ -183,17 +203,21 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
 
     function persist() {
         if (!state.route || !state.segments.length || !state.zones.length) {
-            localStorage.removeItem(storageKey);
+            clearPersistedState();
             return;
         }
 
-        localStorage.setItem(storageKey, JSON.stringify({
-            route: state.route,
-            segments: state.segments,
-            zones: state.zones,
-            selectedZoneId: state.selectedZoneId,
-            warning: state.warning,
-        }));
+        try {
+            localStorage.setItem(storageKey, JSON.stringify({
+                route: state.route,
+                segments: state.segments,
+                zones: state.zones,
+                selectedZoneId: state.selectedZoneId,
+                warning: state.warning,
+            }));
+        } catch {
+            // Storage is optional; keep the current session running.
+        }
     }
 
     function clearStatus() {

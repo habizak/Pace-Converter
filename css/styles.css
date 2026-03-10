@@ -520,10 +520,12 @@ button {
     position: relative;
     display: block;
     width: 100%;
-    height: var(--multi-handle-height);
+    height: 44px;
+    margin: -16px 0;
     border: 0;
     cursor: row-resize;
     touch-action: none;
+    z-index: 1;
 }
 
 .ctds-multi-divider::before,
@@ -536,11 +538,11 @@ button {
 }
 
 .ctds-multi-divider::before {
-    top: 0;
+    top: calc(50% - (var(--multi-handle-height) / 2));
 }
 
 .ctds-multi-divider::after {
-    bottom: 0;
+    top: calc(50% + (var(--multi-handle-height) / 2));
 }
 
 .ctds-multi-divider-handle {
