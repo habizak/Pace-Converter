@@ -12,7 +12,7 @@
   - `normalizeVelocity`
 - [x] Verify no references to removed wrappers remain.
 - [x] Run syntax/quality checks relevant to changed files.
-- [ ] Commit and push changes.
+- [x] Commit and push changes.
 
 ## Review
 
@@ -21,3 +21,4 @@
 - Regression guard:
   - `rg` search confirms no remaining references/definitions for removed wrappers in `js/calculator.js`.
   - `node --check` passed for `js/calculator.js`, `js/convert.js`, and `js/normalize.js`.
+- Changes committed and pushed on branch `codex/refactor` (commit: `c503818`).
