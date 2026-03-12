@@ -421,7 +421,15 @@ class PaceCalculator {
 
         const normalized = this.normalizePace(pace);
         const seconds = this.parsePace(normalized);
-        return seconds > 0 ? seconds : null;
+        if (seconds <= 0) {
+            return null;
+        }
+
+        if (this.unitSystem === 'IMPERIAL') {
+            return seconds / 1.609344;
+        }
+
+        return seconds;
     }
 }
 
