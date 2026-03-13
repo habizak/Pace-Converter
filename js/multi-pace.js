@@ -731,6 +731,8 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
             return;
         }
 
+        event.preventDefault();
+
         const touch = event.touches[0];
         if (!touch) {
             return;
@@ -781,7 +783,7 @@ export function initMultiPaceApp({ root, storageKey, announce, getSeedPace }) {
         elements.sheetInput.addEventListener('blur', normalizePaceInputValue);
         elements.zones.addEventListener('click', handleZoneClick);
         elements.zones.addEventListener('mousedown', handlePointerDown);
-        elements.zones.addEventListener('touchstart', handleTouchStart, { passive: true });
+        elements.zones.addEventListener('touchstart', handleTouchStart, { passive: false });
         window.addEventListener('mousemove', event => moveDrag(event.clientY));
         window.addEventListener('mouseup', endDrag);
         window.addEventListener('touchmove', handleTouchMove, { passive: false });
