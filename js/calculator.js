@@ -91,10 +91,10 @@ class PaceCalculator {
         const raw = input.value.trim();
 
         if (input === this.timeInput) {
-            const auto = parseDigitsToTime(raw);
+            const auto = this.parseDigitsToTime(raw);
             if (auto) input.value = auto;
         } else if (input === this.paceInput) {
-            const auto = parseDigitsToPace(raw);
+            const auto = this.parseDigitsToPace(raw);
             if (auto) input.value = auto;
         }
 
@@ -103,21 +103,45 @@ class PaceCalculator {
         this.saveState();
     }
 
+    parseDigitsToPace(val) {
+        return parseDigitsToPace(val);
+    }
+
+    parseDigitsToTime(val) {
+        return parseDigitsToTime(val);
+    }
+
     normalizeInput(input) {
         let value = input.value.trim();
         if (!value) return;
 
         if (input === this.timeInput) {
-            value = normalizeTime(value);
+            value = this.normalizeTime(value);
         } else if (input === this.distanceInput) {
-            value = normalizeDistance(value);
+            value = this.normalizeDistance(value);
         } else if (input === this.speedInput) {
-            value = normalizeVelocity(value);
+            value = this.normalizeVelocity(value);
         } else if (input === this.paceInput) {
-            value = normalizePace(value);
+            value = this.normalizePace(value);
         }
 
         input.value = value;
+    }
+
+    normalizeTime(timeStr) {
+        return normalizeTime(timeStr);
+    }
+
+    normalizeDistance(distStr) {
+        return normalizeDistance(distStr);
+    }
+
+    normalizePace(paceStr) {
+        return normalizePace(paceStr);
+    }
+
+    normalizeVelocity(velStr) {
+        return normalizeVelocity(velStr);
     }
 
     setTarget(newTarget) {
@@ -140,7 +164,7 @@ class PaceCalculator {
             distanceInput: this.distanceInput,
             speedInput: this.speedInput,
             paceInput: this.paceInput,
-            normalizePace,
+            normalizePace: value => this.normalizePace(value),
         });
     }
 
