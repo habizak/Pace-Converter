@@ -91,10 +91,10 @@ class PaceCalculator {
         const raw = input.value.trim();
 
         if (input === this.timeInput) {
-            const auto = this.parseDigitsToTime(raw);
+            const auto = parseDigitsToTime(raw);
             if (auto) input.value = auto;
         } else if (input === this.paceInput) {
-            const auto = this.parseDigitsToPace(raw);
+            const auto = parseDigitsToPace(raw);
             if (auto) input.value = auto;
         }
 
@@ -103,45 +103,21 @@ class PaceCalculator {
         this.saveState();
     }
 
-    parseDigitsToPace(val) {
-        return parseDigitsToPace(val);
-    }
-
-    parseDigitsToTime(val) {
-        return parseDigitsToTime(val);
-    }
-
     normalizeInput(input) {
         let value = input.value.trim();
         if (!value) return;
 
         if (input === this.timeInput) {
-            value = this.normalizeTime(value);
+            value = normalizeTime(value);
         } else if (input === this.distanceInput) {
-            value = this.normalizeDistance(value);
+            value = normalizeDistance(value);
         } else if (input === this.speedInput) {
-            value = this.normalizeVelocity(value);
+            value = normalizeVelocity(value);
         } else if (input === this.paceInput) {
-            value = this.normalizePace(value);
+            value = normalizePace(value);
         }
 
         input.value = value;
-    }
-
-    normalizeTime(timeStr) {
-        return normalizeTime(timeStr);
-    }
-
-    normalizeDistance(distStr) {
-        return normalizeDistance(distStr);
-    }
-
-    normalizePace(paceStr) {
-        return normalizePace(paceStr);
-    }
-
-    normalizeVelocity(velStr) {
-        return normalizeVelocity(velStr);
     }
 
     setTarget(newTarget) {
@@ -164,7 +140,7 @@ class PaceCalculator {
             distanceInput: this.distanceInput,
             speedInput: this.speedInput,
             paceInput: this.paceInput,
-            normalizePace: value => this.normalizePace(value),
+            normalizePace,
         });
     }
 
