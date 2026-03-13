@@ -12,6 +12,7 @@
   - GPX Upload: Parse `.gpx` routes (5km to 45km) into 100m pace blocks
   - Elevation Chart: Visualise the route's elevation profile
   - Pace Zones: Select segments of the route and assign distinct paces to plan your final finishing time
+  - Zone Controls: `+ Add Zone` and `Delete` actions to manage pace zones
 - Unit toggle: METRIC (km, km/h, min/km) or IMPERIAL (mi, mph, min/mi)
 - Smart input: digits auto-format to time (e.g. `123456` → `01:23:45`) or pace (e.g. `530` → `05:30`)
 - Offline-first with localStorage persistence
